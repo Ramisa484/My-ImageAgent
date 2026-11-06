@@ -1,0 +1,150 @@
+/* فونت استاندارد و حرفه‌ای ایران سنس (مشابه اسنپ و دیجی‌کالا) */
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.000/Vazirmatn-Variable-font-face.css');
+
+html, body, [class*="css"] {
+    font-family: 'Vazirmatn', 'IRANSans', Tahoma, sans-serif !important;
+    direction: rtl;
+}
+
+/* --- پس زمینه خنثی و تمیز (استاندارد داشبوردهای شرکتی) --- */
+.bg-nature, .bg-dark, .bg-light {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #F8F9FA; /* خاکستری خیلی روشن و آرام */
+    z-index: -1;
+}
+
+/* --- کارت‌های سفید و مینیمال --- */
+.glass-panel {
+    background: #FFFFFF !important;
+    border: 1px solid #E9ECEF !important;
+    border-radius: 8px !important; /* گوشه‌های ملایم و استاندارد */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important; /* سایه خیلی نرم */
+    color: #212529 !important;
+    padding: 24px;
+}
+
+/* هدر سایت */
+.main-header {
+    text-align: right;
+    padding: 24px 0;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #DEE2E6;
+}
+
+.main-header h1 {
+    color: #212529;
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.main-header p {
+    color: #6C757D;
+    font-size: 0.95rem;
+    margin-top: 8px;
+    font-weight: 400;
+}
+
+/* کارت های آمار (مثل داشبوردهای مدیریتی) */
+.metric-card {
+    padding: 20px;
+    text-align: right;
+    font-size: 0.85rem;
+    color: #6C757D !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E9ECEF !important;
+    border-radius: 8px !important;
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #212529;
+    display: block;
+    margin-top: 4px;
+}
+
+/* عنوان بخش ها */
+.section-title {
+    color: #212529;
+    border-right: 3px solid #0D6EFD; /* آبی استاندارد و رسمی */
+    padding-right: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* استایل کادرها */
+.stTextArea textarea {
+    background-color: #FFFFFF !important;
+    color: #212529 !important;
+    border: 1px solid #CED4DA !important;
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.stTextArea textarea:focus {
+    border-color: #86B7FE !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important; /* افکت فوکوس استاندارد بوت‌استرپ */
+}
+
+/* دکمه‌ها (تمیز، بدون گرادیانت، با آبی رسمی) */
+.stButton button {
+    background-color: #0D6EFD !important; /* آبی رسمی */
+    color: #FFFFFF !important;
+    font-weight: 500 !important;
+    border: 1px solid #0D6EFD !important;
+    border-radius: 6px !important;
+    padding: 10px 20px !important;
+    transition: background-color 0.15s ease-in-out !important;
+    box-shadow: none !important;
+}
+
+.stButton button:hover {
+    background-color: #0B5ED7 !important;
+    border-color: #0A58CA !important;
+}
+
+/* استایل سایدبار */
+[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
+    border-left: 1px solid #DEE2E6 !important;
+}
+
+/* کارت‌های گالری */
+.stImage img {
+    border-radius: 6px;
+    border: 1px solid #E9ECEF;
+}
+
+/* تب‌ها */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    border-bottom: 1px solid #DEE2E6;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: transparent;
+    border-radius: 0;
+    color: #6C757D;
+    padding: 10px 16px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+}
+
+.stTabs [aria-selected="true"] {
+    background: transparent !important;
+    color: #0D6EFD !important;
+    border-bottom: 2px solid #0D6EFD !important;
+    font-weight: 600;
+}
+
+/* متن‌های عمومی */
+p, span, div, label {
+    color: #495057;
+}
