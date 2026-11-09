@@ -1,7 +1,12 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import streamlit as st
 import os
 import time
 import random
+import schemdraw
+import schemdraw.elements as elm
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 import ollama
@@ -24,6 +29,8 @@ if 'history' not in st.session_state:
     st.session_state.history = []
 if 'gallery' not in st.session_state:
     st.session_state.gallery = []
+if 'circuit_gallery' not in st.session_state:
+    st.session_state.circuit_gallery = []
 if 'current_image' not in st.session_state:
     st.session_state.current_image = None
 if 'uploaded_img_path' not in st.session_state:
@@ -44,7 +51,7 @@ else:
 st.markdown("""
 <div class="main-header">
     <h1>✨ Ramisa's AI Studio</h1>
-    <p>خلق، تحلیل و مدیریت تصاویر با قدرت هوش مصنوعی</p>
+    <p>خلق تصویر، تحلیل و طراحی مدارهای الکتریکی</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -53,7 +60,7 @@ col_s1, col_s2, col_s3 = st.columns(3)
 with col_s1:
     st.markdown(f"<div class='metric-card'>🖼️ تصاویر تولید شده<br><span class='metric-value'>{len(st.session_state.gallery)}</span></div>", unsafe_allow_html=True)
 with col_s2:
-    st.markdown(f"<div class='metric-card'>📝 کل پرامپت‌ها<br><span class='metric-value'>{len(st.session_state.history)}</span></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-card'>⚡ مدارهای طراحی شده<br><span class='metric-value'>{len(st.session_state.circuit_gallery)}</span></div>", unsafe_allow_html=True)
 with col_s3:
     st.markdown("<div class='metric-card'>🟢 وضعیت سیستم<br><span class='metric-value'>آنلاین</span></div>", unsafe_allow_html=True)
 
@@ -93,16 +100,15 @@ with st.sidebar:
     st.markdown("<p style='color: #0D6EFD; font-size: 16px; font-weight: bold;'>Ramisa Fakhr Rasouli</p>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# --- چیدمان اصلی (دو ستون) ---
-col_main, col_side = st.columns([2.5, 1.5])
+# --- چیدمان اصلی (تب‌ها) ---
+tab1, tab2, tab3 = st.tabs(["🎨 تولید تصویر", "⚡ طراحی مدار", "💬 چت و تحلیل"])
 
-with col_main:
-    st.markdown("<h3 class='section-title'>🎨 خلق تصویر جدید</h3>", unsafe_allow_html=True)
-    
-    with st.container():
-        prompt = st.text_area("توصیف تصویر خود را بنویسید:", 
-                              height=100, 
-                              placeholder="مثال: A majestic dragon flying over a neon cyberpunk city...")
+# ----------------- تب ۱: تولید تصویر -----------------
+with tab1:
+    col_main, col_side = st.columns([2.5, 1.5])
+    with col_main:
+        st.markdown("<h3 class='section-title'>🎨 خلق تصویر جدید</h3>", unsafe_allow_html=True)
+        prompt = st.text_area("توصیف تصویر خود را بنویسید:", height=100, placeholder="مثال: A majestic dragon flying over a neon cyberpunk city...")
         
         if st.button("🚀 شروع تولید تصویر", use_container_width=True):
             if prompt:
@@ -114,7 +120,6 @@ with col_main:
                         time.sleep(0.01)
                         my_bar.progress(percent + 1, text=f"{progress_text} ({percent+1}%)")
                     
-                    # *** تولید عکس آفلاین ***
                     image = Image.new('RGB', (1024, 1024), color=(240, 242, 245))
                     draw = ImageDraw.Draw(image)
                     
@@ -159,14 +164,10 @@ with col_main:
             else:
                 st.warning("⚠️ لطفا ابتدا پرامپت خود را بنویسید.")
 
-    # --- نمایشگر عکس اصلی ---
-    st.divider()
-    st.markdown("<h3 class='section-title'>🖼️ پیش‌نمایش تصویر</h3>", unsafe_allow_html=True)
-    
-    if st.session_state.current_image:
-        with st.container():
+        st.divider()
+        st.markdown("<h3 class='section-title'>🖼️ پیش‌نمایش تصویر</h3>", unsafe_allow_html=True)
+        if st.session_state.current_image:
             st.image(st.session_state.current_image, use_column_width=True)
-            
             c1, c2 = st.columns(2)
             with c1:
                 if st.button("🗑️ حذف از صفحه", use_container_width=True):
@@ -175,15 +176,91 @@ with col_main:
             with c2:
                 with open(st.session_state.current_image, "rb") as file:
                     st.download_button(label="💾 دانلود عکس", data=file, file_name="ai_image.png", mime="image/png", use_container_width=True)
-    else:
-        st.info("هنوز تصویری تولید نکرده‌اید.")
+        else:
+            st.info("هنوز تصویری تولید نکرده‌اید.")
 
-    # --- بخش چت و تحلیل با Ollama ---
-    st.divider()
-    st.markdown("<h3 class='section-title'>💬 چت با ایجنت هوش مصنوعی</h3>", unsafe_allow_html=True)
+# ----------------- تب ۲: طراحی مدار -----------------
+with tab2:
+    st.markdown("<h3 class='section-title'>⚡ طراحی و تحلیل مدارهای الکتریکی</h3>", unsafe_allow_html=True)
+    st.info("در این بخش می‌توانید مدارهای منطقی و الکتریکی را طراحی یا تحلیل کنید.")
     
-    user_chat = st.text_input("پیام خود را بنویسید (مثلا: عکسی که آپلود کردم را تحلیل کن):")
-    if st.button("ارسال پیام به ایجنت"):
+    circuit_mode = st.radio("حالت کار با مدار:", 
+                            ["۱. کشیدن مدار از روی توضیحات (متن به مدار)", 
+                             "۲. تحلیل عکس مدار (عکس به توضیحات)"],
+                            horizontal=True)
+    
+    st.divider()
+    
+    if circuit_mode.startswith("۱"):
+        st.subheader("📝 توضیحات مدار را بنویسید")
+        circuit_prompt = st.text_area("مثال: یک مدار ساده با باتری، مقاومت و LED", height=100)
+        
+        if st.button("⚡ رسم مدار", use_container_width=True):
+            if circuit_prompt:
+                with st.spinner("در حال ترسیم مدار..."):
+                    try:
+                        d = schemdraw.Drawing()
+                        d += elm.Battery().label('9V')
+                        d += elm.Resistor().label('1kΩ')
+                        d += elm.LED().label('LED')
+                        d += elm.Line().down()
+                        d += elm.Line().left()
+                        
+                        os.makedirs("circuits", exist_ok=True)
+                        circuit_path = f"circuits/circuit_{int(time.time())}.png"
+                        d.save(circuit_path, dpi=150)
+                        
+                        st.session_state.circuit_gallery.append({"path": circuit_path, "prompt": circuit_prompt, "time": datetime.now().strftime("%H:%M")})
+                        st.success("مدار با موفقیت ترسیم شد!")
+                        st.image(circuit_path, caption=f"مدار: {circuit_prompt}")
+                        
+                    except Exception as e:
+                        st.error(f"خطا در ترسیم مدار: {e}")
+    
+    elif circuit_mode.startswith("۲"):
+        st.subheader("📸 عکس مدار خود را آپلود کنید")
+        st.write("این بخش به شما اجازه می‌دهد عکسی از یک مدار را آپلود کنید تا ایجنت آن را تحلیل کند.")
+        
+        circuit_image = st.file_uploader("آپلود عکس مدار (JPG/PNG)", type=["jpg", "png", "jpeg"], key="circuit_upload")
+        
+        if circuit_image is not None:
+            img = Image.open(circuit_image)
+            st.image(img, caption="مدار آپلود شده", use_column_width=True)
+            
+            os.makedirs("circuits", exist_ok=True)
+            img_path = f"circuits/uploaded_{int(time.time())}.png"
+            img.save(img_path)
+            
+            if st.button("📝 توضیحات مدار را استخراج کن", use_container_width=True):
+                with st.spinner("ایجنت در حال تحلیل مدار است..."):
+                    try:
+                        # استفاده از مدل جدید llava-vision
+                        response = ollama.chat(
+                            model='llava-vision', 
+                            messages=[{'role': 'user', 'content': 'این مدار الکتریکی را تحلیل کن و اجزای آن (مقاومت، خازن، باتری و...) را به فارسی توضیح بده.', 'images': [img_path]}],
+                            options={'num_gpu': 0}
+                        )
+                        st.success("تحلیل ایجنت:")
+                        st.write(response['message']['content'])
+                    except Exception as e:
+                        st.error(f"خطا: {e}")
+
+    st.divider()
+    st.subheader("🖼️ گالری مدارها")
+    if not st.session_state.circuit_gallery:
+        st.write("هنوز مداری طراحی نشده است.")
+    else:
+        cols = st.columns(3)
+        for idx, item in enumerate(reversed(st.session_state.circuit_gallery)):
+            with cols[idx % 3]:
+                st.image(item['path'], caption=item['prompt'])
+                st.caption(f"⏱️ {item.get('time', '')}")
+
+# ----------------- تب ۳: چت و تحلیل -----------------
+with tab3:
+    st.markdown("<h3 class='section-title'>💬 چت با ایجنت هوش مصنوعی</h3>", unsafe_allow_html=True)
+    user_chat = st.text_input("پیام خود را بنویسید:")
+    if st.button("ارسال پیام"):
         if user_chat:
             with st.spinner("ایجنت در حال پردازش است..."):
                 try:
@@ -191,31 +268,17 @@ with col_main:
                     if st.session_state.uploaded_img_path and os.path.exists(st.session_state.uploaded_img_path):
                         messages[0]['images'] = [st.session_state.uploaded_img_path]
                     
-                    res = ollama.chat(model='llava', messages=messages, options={'num_gpu': 0})
+                    # استفاده از مدل جدید llava-vision
+                    res = ollama.chat(model='llava-vision', messages=messages, options={'num_gpu': 0})
                     st.success("پاسخ ایجنت:")
                     st.write(res['message']['content'])
                 except Exception as e:
-                    st.error(f"خطا در ارتباط با Ollama: {e}")
+                    st.error(f"خطا: {e}")
 
-with col_side:
-    st.markdown("<h3 class='section-title'>📋 تاریخچه و گالری</h3>", unsafe_allow_html=True)
-    
-    tab1, tab2 = st.tabs(["📝 پرامپت‌ها", "🖼️ عکس‌ها"])
-    
-    with tab1:
-        if not st.session_state.history:
-            st.write("تاریخچه‌ای وجود ندارد.")
-        else:
-            for idx, item in enumerate(reversed(st.session_state.history)):
-                with st.expander(f"⏱️ {item['time']} - {item['text'][:20]}..."):
-                    st.code(item['text'])
-    
-    with tab2:
-        if not st.session_state.gallery:
-            st.write("گالری خالی است.")
-        else:
-            for idx, img_data in enumerate(reversed(st.session_state.gallery)):
-                with st.container():
-                    st.image(img_data['path'], use_column_width=True)
-                    st.caption(f"📝 {img_data['prompt'][:30]}...")
-                    st.divider()
+# --- بخش گالری تصاویر در سایدبار ---
+with st.sidebar:
+    st.divider()
+    st.subheader("📋 تاریخچه تصاویر")
+    if st.session_state.history:
+        for item in reversed(st.session_state.history):
+            st.write(f"- {item['time']}: {item['text'][:20]}...")
